@@ -6,19 +6,21 @@
 // +----------------------------------------------------------------------
 // | Author: Dean <zxxjjforever@163.com>
 // +----------------------------------------------------------------------
-namespace api\wxapp\controller;
+namespace api\home\controller;
 
+use think\Db;
+use think\Validate;
 use cmf\controller\RestBaseController;
-use wxapp\aes\WXBizDataCrypt;
 
-class UserController extends RestBaseController
+class IndexController extends RestBaseController
 {
-    // 获取用户信息
-    public function getUserInfo()
+    // api 首页
+    public function index()
     {
-
-
-
+        $this->success("恭喜您,API访问成功!", [
+            'version' => '1.1.0',
+            'doc'     => 'http://www.thinkcmf.com/cmf5api.html'
+        ]);
     }
 
 }

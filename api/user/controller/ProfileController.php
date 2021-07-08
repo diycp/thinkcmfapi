@@ -1,4 +1,11 @@
 <?php
+// +----------------------------------------------------------------------
+// | ThinkCMF [ WE CAN DO IT MORE SIMPLE ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2013-2017 http://www.thinkcmf.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: Dean <zxxjjforever@163.com>
+// +----------------------------------------------------------------------
 namespace api\user\controller;
 
 use cmf\controller\RestUserBaseController;
@@ -45,13 +52,14 @@ class ProfileController extends RestUserBaseController
     public function bindingEmail()
     {
         $validate = new Validate([
-            'email'             => 'require|email',
+            'email'             => 'require|email|unique:user,user_email',
             'verification_code' => 'require'
         ]);
 
         $validate->message([
             'email.require'             => '请输入您的邮箱!',
             'email.email'               => '请输入正确的邮箱格式!',
+            'email.unique'              => '邮箱账号已存在!',
             'verification_code.require' => '请输入数字验证码!'
         ]);
 
@@ -81,12 +89,13 @@ class ProfileController extends RestUserBaseController
     public function bindingMobile()
     {
         $validate = new Validate([
-            'mobile'            => 'require',
+            'mobile'            => 'require|unique:user,mobile',
             'verification_code' => 'require'
         ]);
 
         $validate->message([
-            'email.require'             => '请输入您的邮箱!',
+            'mobile.require'            => '请输入您的手机号!',
+            'mobile.unique'             => '手机号已经存在！',
             'verification_code.require' => '请输入数字验证码!'
         ]);
 
@@ -95,9 +104,10 @@ class ProfileController extends RestUserBaseController
             $this->error($validate->getError());
         }
 
-        if (!preg_match('/(^(13\d|15[^4\D]|17[13678]|18\d)\d{8}|170[^346\D]\d{7})$/', $data['mobile'])) {
+        if (!cmf_check_mobile($data['mobile'])) {
             $this->error("请输入正确的手机格式!");
         }
+
 
         $userId = $this->getUserId();
         $mobile = Db::name("user")->where('id', $userId)->value('mobile');
@@ -114,6 +124,59 @@ class ProfileController extends RestUserBaseController
         Db::name("user")->where('id', $userId)->update(['mobile' => $data['mobile']]);
 
         $this->success("绑定成功!");
+    }
+
+    /**
+     * 用户基本信息获取及修改
+     * @param 请求为GET 获取信息
+     * @param [string] $[field] [要获取的一个或多个字段名] 可选
+     * @return 带参数,返回某个或多个字段信息。不带参数，返回所有信息
+     * @param 请求为POST 修改信息
+     */
+    public function userInfo($field = '')
+    {
+        //判断请求为GET，获取信息
+        if ($this->request->isGet()) {
+            $userId   = $this->getUserId();
+            $fieldStr = 'user_type,user_login,mobile,user_email,user_nickname,avatar,signature,user_url,sex,birthday,score,coin,user_status,user_activation_key,create_time,last_login_time,last_login_ip';
+            if (empty($field)) {
+                $userData = Db::name("user")->field($fieldStr)->find($userId);
+            } else {
+                $fieldArr     = explode(',', $fieldStr);
+                $postFieldArr = explode(',', $field);
+                $mixedField   = array_intersect($fieldArr, $postFieldArr);
+                if (empty($mixedField)) {
+                    $this->error('您查询的信息不存在！');
+                }
+                if (count($mixedField) > 1) {
+                    $fieldStr = implode(',', $mixedField);
+                    $userData = Db::name("user")->field($fieldStr)->find($userId);
+                } else {
+                    $userData = Db::name("user")->where('id', $userId)->value($mixedField);
+                }
+            }
+            $this->success('获取成功！', $userData);
+        }
+        //判断请求为POST,修改信息
+        if ($this->request->isPost()) {
+            $userId   = $this->getUserId();
+            $fieldStr = 'user_nickname,avatar,signature,user_url,sex,birthday';
+            $data     = $this->request->post();
+            if (empty($data)) {
+                $this->error('修改失败，提交表单为空！');
+            }
+
+            if (!empty($data['birthday'])) {
+                $data['birthday'] = strtotime($data['birthday']);
+            }
+
+            $upData = Db::name("user")->where('id', $userId)->field($fieldStr)->update($data);
+            if ($upData !== false) {
+                $this->success('修改成功！');
+            } else {
+                $this->error('修改失败！');
+            }
+        }
     }
 
 }

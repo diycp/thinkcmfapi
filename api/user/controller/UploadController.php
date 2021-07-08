@@ -1,4 +1,11 @@
 <?php
+// +----------------------------------------------------------------------
+// | ThinkCMF [ WE CAN DO IT MORE SIMPLE ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2013-2017 http://www.thinkcmf.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: Dean <zxxjjforever@163.com>
+// +----------------------------------------------------------------------
 namespace api\user\controller;
 
 use cmf\controller\RestUserBaseController;
@@ -6,7 +13,7 @@ use think\Db;
 
 class UploadController extends RestUserBaseController
 {
-    // 用户密码修改
+    // 上传一个文件
     public function one()
     {
         $file = $this->request->file('file');

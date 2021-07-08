@@ -4,21 +4,13 @@
 // +----------------------------------------------------------------------
 // | Copyright (c) 2013-2017 http://www.thinkcmf.com All rights reserved.
 // +----------------------------------------------------------------------
-// | Author: Dean <zxxjjforever@163.com>
+// | Author: pl125 <xskjs888@163.com>
 // +----------------------------------------------------------------------
-namespace api\wxapp\controller;
+namespace api\user\model;
 
-use cmf\controller\RestBaseController;
-use wxapp\aes\WXBizDataCrypt;
+use think\Model;
 
-class UserController extends RestBaseController
+class RecycleBinModel extends Model
 {
-    // 获取用户信息
-    public function getUserInfo()
-    {
-
-
-
-    }
 
 }

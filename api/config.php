@@ -15,13 +15,13 @@ return [
     // 应用命名空间
     'app_namespace'          => 'api',
     // 应用模式状态
-    'app_status'             => '',
+    'app_status'             => APP_DEBUG ? 'debug' : 'release',
     // 是否支持多模块
     'app_multi_module'       => true,
     // 入口自动绑定模块
     'auto_bind_module'       => false,
     // 注册的根命名空间
-    'root_namespace'         => ['cmf' => CMF_PATH],
+    'root_namespace'         => ['cmf' => CMF_PATH, 'plugins' => PLUGINS_PATH, 'app' => CMF_ROOT . 'app/'],
     // 扩展函数文件
     'extra_file_list'        => [THINK_PATH . 'helper' . EXT, CMF_PATH . 'common' . EXT],
     // 默认输出类型
@@ -50,7 +50,7 @@ return [
     // +----------------------------------------------------------------------
 
     // 默认模块名
-    'default_module'         => 'portal',
+    'default_module'         => 'home',
     // 禁止访问模块
     'deny_module_list'       => ['common'],
     // 默认控制器名
@@ -135,7 +135,7 @@ return [
     // 显示错误信息
     'show_error_msg'        => false,
     // 异常处理handle类 留空使用 \think\exception\Handle
-    'exception_handle'      => '',
+    'exception_handle'      => '\\api\\common\\exception\\Http',
 
     // +----------------------------------------------------------------------
     // | 日志设置
@@ -215,7 +215,7 @@ return [
 
     'database'                => [
         // 数据库调试模式
-        'debug'           => false,
+        'debug'           => true,
         // 数据集返回类型
         'resultset_type'  => 'collection',
         // 自动写入时间戳字段

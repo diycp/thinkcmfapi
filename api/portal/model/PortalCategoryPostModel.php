@@ -4,21 +4,21 @@
 // +----------------------------------------------------------------------
 // | Copyright (c) 2013-2017 http://www.thinkcmf.com All rights reserved.
 // +----------------------------------------------------------------------
-// | Author: Dean <zxxjjforever@163.com>
+// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-namespace api\wxapp\controller;
+// | Author: wuwu <15093565100@163.com>
+// +----------------------------------------------------------------------
+namespace api\portal\model;
 
-use cmf\controller\RestBaseController;
-use wxapp\aes\WXBizDataCrypt;
+use think\Model;
 
-class UserController extends RestBaseController
+class PortalCategoryPostModel extends Model
 {
-    // 获取用户信息
-    public function getUserInfo()
+    /**
+     * 基础查询
+     */
+    protected function base($query)
     {
-
-
-
+        $query->where('status', 1);
     }
-
 }

@@ -1,12 +1,10 @@
 <?php
 // +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK ]
+// | ThinkCMF [ WE CAN DO IT MORE SIMPLE ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2016 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2013-2017 http://www.thinkcmf.com All rights reserved.
 // +----------------------------------------------------------------------
-// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
-// +----------------------------------------------------------------------
-// | Author: liu21st <liu21st@gmail.com>
+// | Author: Dean <zxxjjforever@163.com>
 // +----------------------------------------------------------------------
 
 // [ 应用入口文件 ]
@@ -14,11 +12,23 @@
 // 调试模式开关
 define("APP_DEBUG", true);
 
+// 定义 APP 命名空间
+define("APP_NAMESPACE", 'api');
+
+// 定义CMF根目录,可更改此目录
+define('CMF_ROOT', __DIR__ . '/../../');
+
 // 定义应用目录
-define('APP_PATH', __DIR__ . '/../../api/');
+define('APP_PATH', CMF_ROOT . 'api/');
 
 // 定义CMF目录
 define('CMF_PATH', __DIR__ . '/../../simplewind/cmf/');
+
+// 定义网站入口目录
+define('WEB_ROOT', __DIR__ . '/../');
+
+// 定义插件目录
+define('PLUGINS_PATH', __DIR__ . '/../plugins/');
 
 // 定义扩展目录
 define('EXTEND_PATH', __DIR__ . '/../../simplewind/extend/');

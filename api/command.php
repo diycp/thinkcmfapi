@@ -6,19 +6,20 @@
 // +----------------------------------------------------------------------
 // | Author: Dean <zxxjjforever@163.com>
 // +----------------------------------------------------------------------
-namespace api\wxapp\controller;
 
-use cmf\controller\RestBaseController;
-use wxapp\aes\WXBizDataCrypt;
+$apps = cmf_scan_dir(APP_PATH . '*', GLOB_ONLYDIR);
 
-class UserController extends RestBaseController
-{
-    // 获取用户信息
-    public function getUserInfo()
-    {
+$returnCommands = [];
 
+foreach ($apps as $app) {
+    $commandFile = APP_PATH . $app . '/command.php';
 
+    if (file_exists($commandFile)) {
+        $commands       = include $commandFile;
 
+        $returnCommands = array_merge($returnCommands, $commands);
     }
 
 }
+
+return $returnCommands;

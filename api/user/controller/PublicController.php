@@ -1,4 +1,11 @@
 <?php
+// +----------------------------------------------------------------------
+// | ThinkCMF [ WE CAN DO IT MORE SIMPLE ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2013-2017 http://www.thinkcmf.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: Dean <zxxjjforever@163.com>
+// +----------------------------------------------------------------------
 namespace api\user\controller;
 
 use think\Db;
@@ -29,14 +36,14 @@ class PublicController extends RestBaseController
 
         $user = [];
 
-        $userQuery = Db::name("user");
+        $findUserWhere = [];
 
         if (Validate::is($data['username'], 'email')) {
-            $user['user_email'] = $data['username'];
-            //$userQuery          = $userQuery->where('user_email', $data['username']);
-        } else if (preg_match('/(^(13\d|15[^4\D]|17[13678]|18\d)\d{8}|170[^346\D]\d{7})$/', $data['username'])) {
-            $user['mobile'] = $data['username'];
-            //$userQuery      = $userQuery->where('mobile', $data['username']);
+            $user['user_email']          = $data['username'];
+            $findUserWhere['user_email'] = $data['username'];
+        } else if (cmf_check_mobile($data['username'])) {
+            $user['mobile']          = $data['username'];
+            $findUserWhere['mobile'] = $data['username'];
         } else {
             $this->error("请输入正确的手机或者邮箱格式!");
         }
@@ -46,7 +53,7 @@ class PublicController extends RestBaseController
             $this->error($errMsg);
         }
 
-        $findUserCount = $userQuery->count();
+        $findUserCount = Db::name("user")->where($findUserWhere)->count();
 
         if ($findUserCount > 0) {
             $this->error("此账号已存在!");
@@ -57,7 +64,7 @@ class PublicController extends RestBaseController
         $user['user_type']   = 2;
         $user['user_pass']   = cmf_password($data['password']);
 
-        $result = $userQuery->insert($user);
+        $result = Db::name("user")->insert($user);
 
 
         if (empty($result)) {
@@ -85,16 +92,17 @@ class PublicController extends RestBaseController
             $this->error($validate->getError());
         }
 
-        $userQuery = Db::name("user");
+        $findUserWhere = [];
+
         if (Validate::is($data['username'], 'email')) {
-            $userQuery = $userQuery->where('user_email', $data['username']);
-        } else if (preg_match('/(^(13\d|15[^4\D]|17[13678]|18\d)\d{8}|170[^346\D]\d{7})$/', $data['username'])) {
-            $userQuery = $userQuery->where('mobile', $data['username']);
+            $findUserWhere['user_email'] = $data['username'];
+        } else if (cmf_check_mobile($data['username'])) {
+            $findUserWhere['mobile'] = $data['username'];
         } else {
-            $userQuery = $userQuery->where('user_login', $data['username']);
+            $findUserWhere['user_login'] = $data['username'];
         }
 
-        $findUser = $userQuery->find();
+        $findUser = Db::name("user")->where($findUserWhere)->find();
 
         if (empty($findUser)) {
             $this->error("用户不存在!");
@@ -112,7 +120,7 @@ class PublicController extends RestBaseController
             }
         }
 
-        $allowedDeviceTypes = ['mobile', 'android', 'iphone', 'ipad', 'web', 'pc', 'mac'];
+        $allowedDeviceTypes = $this->allowedDeviceTypes;
 
         if (empty($data['device_type']) || !in_array($data['device_type'], $allowedDeviceTypes)) {
             $this->error("请求错误,未知设备!");
@@ -149,12 +157,19 @@ class PublicController extends RestBaseController
             $this->error("登录失败!");
         }
 
-        $this->success("登录成功!", ['token' => $token]);
+        $this->success("登录成功!", ['token' => $token, 'user' => $findUser]);
     }
 
     // 用户退出
     public function logout()
     {
+        $userId = $this->getUserId();
+        Db::name('user_token')->where([
+            'token'       => $this->token,
+            'user_id'     => $userId,
+            'device_type' => $this->deviceType
+        ])->update(['token' => '']);
+
         $this->success("退出成功!");
     }
 
@@ -181,7 +196,7 @@ class PublicController extends RestBaseController
         $userWhere = [];
         if (Validate::is($data['username'], 'email')) {
             $userWhere['user_email'] = $data['username'];
-        } else if (preg_match('/(^(13\d|15[^4\D]|17[13678]|18\d)\d{8}|170[^346\D]\d{7})$/', $data['username'])) {
+        } else if (cmf_check_mobile($data['username'])) {
             $userWhere['mobile'] = $data['username'];
         } else {
             $this->error("请输入正确的手机或者邮箱格式!");
@@ -192,8 +207,8 @@ class PublicController extends RestBaseController
             $this->error($errMsg);
         }
 
-        $userPass=cmf_password($data['password']);
-        Db::name("user")->where($userWhere)->update(['user_pass'=>$userPass]);
+        $userPass = cmf_password($data['password']);
+        Db::name("user")->where($userWhere)->update(['user_pass' => $userPass]);
 
         $this->success("密码重置成功,请使用新密码登录!");
 

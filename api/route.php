@@ -6,19 +6,22 @@
 // +----------------------------------------------------------------------
 // | Author: Dean <zxxjjforever@163.com>
 // +----------------------------------------------------------------------
-namespace api\wxapp\controller;
+$apps = cmf_scan_dir(APP_PATH . '*', GLOB_ONLYDIR);
 
-use cmf\controller\RestBaseController;
-use wxapp\aes\WXBizDataCrypt;
+foreach ($apps as $app) {
+    $routeFile = APP_PATH . $app . '/route.php';
 
-class UserController extends RestBaseController
-{
-    // 获取用户信息
-    public function getUserInfo()
-    {
-
-
-
+    if (file_exists($routeFile)) {
+        include_once $routeFile;
     }
 
 }
+
+
+if (file_exists(CMF_ROOT . "data/conf/route.php")) {
+    $runtimeRoutes = include CMF_ROOT . "data/conf/route.php";
+} else {
+    $runtimeRoutes = [];
+}
+
+return $runtimeRoutes;
